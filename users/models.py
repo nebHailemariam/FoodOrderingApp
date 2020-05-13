@@ -21,30 +21,49 @@ class User(AbstractUser):
     objects = UserManager()
 
     def __str__(self):
-        return self.email
+        return self.username
+
 
 class Client(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name="user_client")
-    location = models.CharField(max_length=30,null=True,blank=True)
     is_verified = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.email
+        return self.user.username
+
 
 class DeliveryMan(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name="user_deliveryman")
-    location = models.CharField(max_length=30,null=True, blank=True)
     is_verified = models.BooleanField(default=False)
     rating = models.FloatField(default=0)
 
     def __str__(self):
-        return self.email
+        return self.user.email
+
 
 class RestaurantAdmin(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name="user_restaurant_admin")
     role = models.PositiveSmallIntegerField(choices=user_constants.RESTAURANT_ADMIN_CHOICES, null=True)
 
     def __str__(self):
-        return self.email
+        return self.user.email
+
+class Location(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    longitude = models.DecimalField(max_digits=8, decimal_places=3)
+    latitude = models.DecimalField(max_digits=8, decimal_places=3)
+
+    def __str__(self):
+        return self.user.username+ ", " + str(self.longitude) + ", " + str(self.latitude)
+
+
+class Address(models.Model):
+    location = models.OneToOneField(Location, on_delete=models.CASCADE)
+    city = models.TextField(max_length=30)
+    sub_city = models.TextField(max_length=30)
+    postcode = models.CharField(max_length=5)
+
+    def __str__(self):
+        return self.location.user.username + ", " + self.city + ", " + self.sub_city
