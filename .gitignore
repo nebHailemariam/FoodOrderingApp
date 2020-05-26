@@ -1,6 +1,7 @@
 venv/
 .idea/
 db.sqlite3
+*__pycache__
 DeliveryApp/__pycache__
 restaurants/__pycache__
 users/__pycache__
