@@ -33,7 +33,7 @@ class ClientRegistrationSerializer(ModelSerializer):
         sid = transaction.savepoint()
         try:
             user_data = validated_data.pop("user")
-            user_data["groups_id"] = 5
+            user_data["groups_id"] = Group.objects.filter(name="Client").first().pk
             user_account = UserSerializer.create(UserSerializer(), validated_data=user_data)
             user_account.save()
             client, created = Client.objects.update_or_create(user=user_account)
@@ -55,7 +55,7 @@ class RestaurantAdminRegistrationSerializer(ModelSerializer):
 
         try:
             user_data = validated_data.pop("user")
-            user_data["groups_id"] = 4
+            user_data["groups_id"] = Group.objects.filter(name="Restaurant admin").first().pk
             user_account = UserSerializer.create(UserSerializer(), validated_data=user_data)
             user_account.save()
             restaurantadmin, created = RestaurantAdmin.objects.update_or_create(user=user_account)
@@ -76,7 +76,7 @@ class DeliveryManRegistrationSerializer(ModelSerializer):
         sid = transaction.savepoint()
         try:
             user_data = validated_data.pop("user")
-            user_data["groups_id"] = 3
+            user_data["groups_id"] = Group.objects.filter(name="Deliveryman").first().pk
             user_account = UserSerializer.create(UserSerializer(), validated_data=user_data)
             user_account.save()
             deliveryman, created = DeliveryMan.objects.update_or_create(user=user_account)
