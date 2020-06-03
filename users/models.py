@@ -5,7 +5,7 @@ from django.utils import timezone
 
 
 class User(AbstractUser):
-    username = models.CharField(primary_key=True, max_length=30, unique=True)
+    username = models.CharField(max_length=30, unique=True)
     first_name = models.CharField( max_length=30, blank=True)
     last_name = models.CharField( max_length=30, blank=True)
     birth_date = models.DateField(null=True, blank=True)
@@ -22,7 +22,7 @@ class User(AbstractUser):
 
 
 class Client(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name="user_client")
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user_client")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -31,7 +31,7 @@ class Client(models.Model):
 
 
 class DeliveryMan(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name="user_deliveryman")
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user_deliveryman")
     is_verified = models.BooleanField(default=False)
     rating = models.FloatField(default=0)
 
@@ -40,7 +40,7 @@ class DeliveryMan(models.Model):
 
 
 class RestaurantAdmin(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name="user_restaurant_admin")
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user_restaurant_admin")
 
     def __str__(self):
         return self.user.email
