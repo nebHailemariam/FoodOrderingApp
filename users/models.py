@@ -12,8 +12,8 @@ class User(AbstractUser):
     email = models.EmailField(unique=True, null=True, db_index=True)
     phone = models.CharField(max_length=255,blank=True,null=True)
     date_joined = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
     groups = models.ForeignKey(Group, on_delete=models.CASCADE)
-    REQUIRED_FIELDS = []
     USERNAME_FIELD = 'username'
     objects = UserManager()
 
@@ -23,7 +23,6 @@ class User(AbstractUser):
 
 class Client(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user_client")
-    created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -34,6 +33,7 @@ class DeliveryMan(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user_deliveryman")
     is_verified = models.BooleanField(default=False)
     rating = models.FloatField(default=0)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.user.email
@@ -41,6 +41,7 @@ class DeliveryMan(models.Model):
 
 class RestaurantAdmin(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user_restaurant_admin")
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.user.email
