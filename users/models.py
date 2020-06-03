@@ -14,6 +14,7 @@ class User(AbstractUser):
     date_joined = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
     groups = models.ForeignKey(Group, on_delete=models.CASCADE)
+    REQUIRED_FIELDS = []
     USERNAME_FIELD = 'username'
     objects = UserManager()
 
