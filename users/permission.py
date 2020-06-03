@@ -37,7 +37,7 @@ class IsDeliveryman(permissions.BasePermission):
 
 
 class IsRestaurantAdmin(permissions.BasePermission):
-    required_groups = ['Restaurant Admin']
+    required_groups = ['Restaurant admin']
 
     def has_permission(self, request, view):
         has_group_permission = _has_group_permission(request.user, self.required_groups)
