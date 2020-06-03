@@ -15,11 +15,14 @@ class LoginSerializer(serializers.Serializer):
             user = authenticate(username=username, password=password)
             if user:
                 data["user"] = user
-            elif User.objects.filter(username=username, password=password) != None:
-                raise exceptions.ValidationError("User not activated yet.")
+                return data
+            user_instance = User.objects.filter(username=username, password=password).first()
+            if user_instance is not None:
+                if not user_instance.is_active:
+                    raise exceptions.ValidationError("User not activated yet.")
+                data["user"] = user_instance
+                return data
             else:
                 raise exceptions.ValidationError("Invalid credentials.")
         else:
             raise exceptions.ValidationError("Username and password must be provided.")
-        print(data)
-        return data
