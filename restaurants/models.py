@@ -1,9 +1,12 @@
-from django.db import models
 from . import constants
+from django.db import models
+from users.models import User
 
 
 class Restaurant(models.Model):
-    name = models.CharField(primary_key=True, max_length=30, unique=True)
+    id = models.AutoField(primary_key=True, auto_created=True)
+    user = models.ManyToManyField(User, related_name="user_restaurant")
+    name = models.CharField( max_length=30, unique=True)
     description = models.TextField(null=True, max_length=255)
 
     def __str__(self):
