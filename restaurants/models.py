@@ -14,6 +14,7 @@ class Restaurant(models.Model):
 
 
 class Location(models.Model):
+    id = models.AutoField(primary_key=True, auto_created=True)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
     longitude = models.DecimalField(max_digits=8, decimal_places=3)
     latitude = models.DecimalField(max_digits=8, decimal_places=3)
@@ -23,6 +24,7 @@ class Location(models.Model):
 
 
 class Address(models.Model):
+    id = models.AutoField(primary_key=True, auto_created=True)
     location = models.OneToOneField(Location, on_delete=models.CASCADE)
     city = models.TextField(max_length=30)
     sub_city = models.TextField(max_length=30)
@@ -33,18 +35,21 @@ class Address(models.Model):
 
 
 class Menu(models.Model):
+    id = models.AutoField(primary_key=True, auto_created=True)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
-    description = models.TextField(null=True, max_length=255)
+    name = models.CharField(max_length=30)
+    description = models.TextField(null=True, blank=True, max_length=255)
     location = models.ForeignKey(Location, on_delete=models.CASCADE, null=True, blank=True)
     available = models.BooleanField(default=False)
-    available_start_date = models.DateTimeField()
-    available_end_date = models.DateTimeField()
+    available_start_date = models.DateTimeField(null=True, blank=True)
+    available_end_date = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.restaurant.name + ", " + self.description + ", "
 
 
 class SubMenu(models.Model):
+    id = models.AutoField(primary_key=True, auto_created=True)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
     menu = models.ManyToManyField(Menu)
     meal_type = models.PositiveSmallIntegerField(choices=constants.MEAL_TYPE_CHOICES)
@@ -56,6 +61,7 @@ class SubMenu(models.Model):
 
 
 class Item(models.Model):
+    id = models.AutoField(primary_key=True, auto_created=True)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
     submenu = models.ManyToManyField(SubMenu)
     name = models.CharField(max_length=30, unique=True)
