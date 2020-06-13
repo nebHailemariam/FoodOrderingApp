@@ -16,8 +16,8 @@ class Restaurant(models.Model):
 class Location(models.Model):
     id = models.AutoField(primary_key=True, auto_created=True)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
-    longitude = models.DecimalField(max_digits=8, decimal_places=3)
-    latitude = models.DecimalField(max_digits=8, decimal_places=3)
+    longitude = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True)
+    latitude = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True)
 
     def __str__(self):
         return self.restaurant.name + ", " + str(self.longitude) + ", " + str(self.latitude)

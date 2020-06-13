@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from restaurants.models import Location, Menu, Restaurant
 from users.permission import IsRestaurantAdmin
 from users.serializers.restaurantadmin.restaurantadmin_restaurant_serializers \
-    import RestaurantSerializer, MenuSerializer
+    import RestaurantSerializer, MenuSerializer, LocationSerializer
 
 
 @api_view(['GET'])
@@ -128,6 +128,7 @@ def restaurantadmin_menu(request, menu_id):
         else:
             return Response("Restaurant object doesn't exist.", status=status.HTTP_400_BAD_REQUEST)
 
+
 @api_view(['GET'])
 @permission_classes([IsRestaurantAdmin])
 def restaurantadmin_menus(request, restaurant_id):
@@ -165,3 +166,88 @@ def restaurantadmin_menu_create(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.error_messages, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsRestaurantAdmin])
+def restaurantadmin_locations(request, restaurant_id):
+
+    if request.method == "GET":
+        if len(Restaurant.objects.filter(id=restaurant_id, user=request.user)) == 0:
+            return Response("No restaurant with this ID.", status=status.HTTP_400_BAD_REQUEST)
+
+        locations = Location.objects.filter(restaurant_id=restaurant_id)
+        serializer =  LocationSerializer(locations, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET', "PUT", "DELETE"])
+@permission_classes([IsRestaurantAdmin])
+def restaurantadmin_location(request, restaurant_id, location_id):
+
+    if request.method == "GET":
+        if len(Restaurant.objects.filter(id=restaurant_id, user=request.user)) == 0:
+            return Response("No restaurant with this ID.", status=status.HTTP_400_BAD_REQUEST)
+
+        location = Location.objects.filter(id=location_id, restaurant_id=restaurant_id)
+        if len(location) == 0:
+            return Response("No location with this ID.", status=status.HTTP_400_BAD_REQUEST)
+        location = location[0]
+        serializer = LocationSerializer(location)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    if request.method == "PUT":
+        request.data["location"]["restaurant_id"] = restaurant_id
+        serializer = Location(data=request.data["location"])
+
+        if serializer.is_valid(raise_exception=ValueError) or serializer.is_valid(raise_exception=Exception):
+            if len(Restaurant.objects.filter(id=serializer.validated_data["restaurant_id"], user=request.user)) == 0:
+                return Response("No restaurant with this ID.", status=status.HTTP_400_BAD_REQUEST)
+
+            location = Location.objects.filter(restaurant_id=serializer.validated_data["restaurant_id"],
+                                           id=serializer.validated_data["id"])
+            if len(location) == 0:
+                return Response("No location with this ID.", status=status.HTTP_400_BAD_REQUEST)
+
+            location = location[0]
+            location.longitude = serializer.validated_data["longitude"]
+            location.latitude = serializer.validated_data["latitude"]
+            # location.save()
+            return Response(serializer.data, status=200)
+        else:
+            return Response(serializer.error_messages, status=status.HTTP_400_BAD_REQUEST)
+
+    if request.method == "DELETE":
+
+        if len(Restaurant.objects.filter(id=restaurant_id, user=request.user)) == 0:
+            return Response("No restaurant with this ID.", status=status.HTTP_400_BAD_REQUEST)
+
+        location = Location.objects.filter(restaurant_id=restaurant_id,
+                                       id=location_id)
+        if len(location) == 0:
+            return Response("No location with this ID.", status=status.HTTP_400_BAD_REQUEST)
+
+        location.delete()
+        return Response("Location deleted.", status=200)
+
+
+@api_view(['POST'])
+@permission_classes([IsRestaurantAdmin])
+def restaurantadmin_location_create(request):
+
+    if request.method == "POST":
+        serializer = LocationSerializer(data=request.data["location"])
+        if serializer.is_valid(raise_exception=ValueError) or serializer.is_valid(raise_exception=Exception):
+            restaurant = Restaurant.objects.filter(id=serializer.validated_data["restaurant_id"])
+            if len(restaurant) == 0:
+                return Response("Restaurant doesn't exist.", status.HTTP_400_BAD_REQUEST)
+            restaurant = restaurant[0]
+            location = Location.objects.create(restaurant=restaurant, latitude=serializer.validated_data["longitude"],
+                                               longitude=serializer.validated_data["latitude"])
+
+            location.save()
+            serializer = LocationSerializer(location)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.error_messages, status=status.HTTP_400_BAD_REQUEST)
+

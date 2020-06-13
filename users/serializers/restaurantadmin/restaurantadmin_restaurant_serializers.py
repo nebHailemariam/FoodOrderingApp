@@ -16,3 +16,10 @@ class MenuSerializer(serializers.Serializer):
     available = serializers.BooleanField()
     available_start_date = serializers.DateTimeField(allow_null=True)
     available_end_date = serializers.DateTimeField(allow_null=True)
+
+
+class LocationSerializer(serializers.Serializer):
+    id = serializers.IntegerField(allow_null=True)
+    restaurant_id = serializers.IntegerField()
+    longitude = serializers.DecimalField(decimal_places=True, max_digits=8, allow_null=True)
+    latitude = serializers.DecimalField(decimal_places=True, max_digits=8, allow_null=True)
