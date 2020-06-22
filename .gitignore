@@ -1,7 +1,8 @@
-venv/
+server/DeliveryApp/venv/
 .idea/
-db.sqlite3
+server/DeliveryApp/db.sqlite3
 *__pycache__
-DeliveryApp/__pycache__
-restaurants/__pycache__
-users/__pycache__
+server/DeliveryApp/DeliveryApp/__pycache__
+server/DeliveryApp/restaurants/__pycache__
+server/DeliveryApp/users/__pycache__
+client/deliveryapp/node_modules
