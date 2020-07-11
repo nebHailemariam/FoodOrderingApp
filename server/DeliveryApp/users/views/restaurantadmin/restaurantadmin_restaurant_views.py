@@ -1,10 +1,10 @@
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from restaurants.models import Location, Menu, Restaurant
+from restaurants.models import Location, Menu, Restaurant, SubMenu
 from users.permission import IsRestaurantAdmin
 from users.serializers.restaurantadmin.restaurantadmin_restaurant_serializers \
-    import RestaurantSerializer, MenuSerializer, LocationSerializer
+    import RestaurantSerializer, MenuSerializer, LocationSerializer, SubMenuSerializer
 
 
 @api_view(['GET'])
@@ -150,7 +150,6 @@ def restaurantadmin_menu_create(request):
     if request.method == "POST":
         serializer = MenuSerializer(data=request.data["menu"])
         if serializer.is_valid(raise_exception=ValueError) or serializer.is_valid(raise_exception=Exception):
-
             if len(Restaurant.objects.filter(id=serializer.validated_data["restaurant_id"], user=request.user)) == 0:
                 return Response("No restaurant with this ID.", status=status.HTTP_400_BAD_REQUEST)
             if len(Location.objects.filter(restaurant_id=serializer.validated_data["restaurant_id"],
@@ -240,7 +239,7 @@ def restaurantadmin_location_create(request):
         if serializer.is_valid(raise_exception=ValueError) or serializer.is_valid(raise_exception=Exception):
             restaurant = Restaurant.objects.filter(id=serializer.validated_data["restaurant_id"])
             if len(restaurant) == 0:
-                return Response("Restaurant doesn't exist.", status.HTTP_400_BAD_REQUEST)
+                return Response("Restaurant doesn't exist.", status=status.HTTP_400_BAD_REQUEST)
             restaurant = restaurant[0]
             location = Location.objects.create(restaurant=restaurant, latitude=serializer.validated_data["longitude"],
                                                longitude=serializer.validated_data["latitude"])
@@ -251,3 +250,42 @@ def restaurantadmin_location_create(request):
         else:
             return Response(serializer.error_messages, status=status.HTTP_400_BAD_REQUEST)
 
+
+@api_view(['POST'])
+@permission_classes([IsRestaurantAdmin])
+def restaurantadmin_submenu_create(request):
+    if request.method == "POST":
+        serializer = SubMenuSerializer(data=request.data["submenu"])
+        if serializer.is_valid(raise_exception=ValueError) or serializer.is_valid(raise_exception=Exception):
+            restaurant = Restaurant.objects.filter(id=serializer.validated_data["restaurant_id"])
+            if len(restaurant) == 0:
+                return Response("Restaurant doesn't exist.", status=status.HTTP_400_BAD_REQUEST)
+            restaurant = restaurant[0]
+            if request.user not in restaurant.user.all():
+                return Response("Unauthorized.", status=status.HTTP_403_FORBIDDEN)
+
+            menu = Menu.objects.filter(id=serializer.validated_data["menu_id"])
+            if len(menu) == 0:
+                return Response("Menu doesn't exist.", status=status.HTTP_400_BAD_REQUEST)
+
+            submenu = SubMenu(restaurant_id=serializer.validated_data["restaurant_id"],
+                              menu_id=serializer.validated_data["menu_id"],
+                              meal_type=serializer.validated_data["meal_type"],
+                              description=serializer.validated_data["description"],
+                              available=serializer.validated_data["available"])
+            submenu.save()
+            serializer = SubMenuSerializer(submenu)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.error_messages, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["GET"])
+@permission_classes([IsRestaurantAdmin])
+def restaurantadmin_submenus(request, restaurant_id, menu_id):
+    if request.method == "GET":
+        if len(Restaurant.objects.filter(id=restaurant_id, user=request.user)) == 0:
+            return Response("No Restaurant with this ID for this restaurant.", status=status.HTTP_400_BAD_REQUEST)
+        submenu = SubMenu.objects.filter(restaurant_id=restaurant_id, menu_id=menu_id)
+        serializer = SubMenuSerializer(submenu, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
