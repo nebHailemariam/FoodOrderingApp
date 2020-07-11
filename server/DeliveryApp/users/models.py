@@ -9,6 +9,7 @@ class User(AbstractUser):
     first_name = models.CharField( max_length=30, blank=True)
     last_name = models.CharField( max_length=30, blank=True)
     birth_date = models.DateField(null=True, blank=True)
+    gender = models.CharField(choices=((1, 'Male'),(2, 'Female')))
     email = models.EmailField(unique=True, null=True, db_index=True)
     phone = models.CharField(max_length=255,blank=True,null=True)
     date_joined = models.DateTimeField(default=timezone.now)

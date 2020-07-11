@@ -51,7 +51,7 @@ class Menu(models.Model):
 class SubMenu(models.Model):
     id = models.AutoField(primary_key=True, auto_created=True)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
-    menu = models.ManyToManyField(Menu)
+    menu = models.ForeignKey(Menu, on_delete=models.CASCADE)
     meal_type = models.PositiveSmallIntegerField(choices=constants.MEAL_TYPE_CHOICES)
     description = models.TextField(null=True, max_length=255)
     available = models.BooleanField(default=False)
@@ -63,7 +63,7 @@ class SubMenu(models.Model):
 class Item(models.Model):
     id = models.AutoField(primary_key=True, auto_created=True)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
-    submenu = models.ManyToManyField(SubMenu)
+    submenu = models.ForeignKey(SubMenu, on_delete=models.CASCADE)
     name = models.CharField(max_length=30, unique=True)
     description = models.TextField(null=True, max_length=255, blank=True)
     price = models.IntegerField(null=False)
