@@ -64,7 +64,7 @@ class Item(models.Model):
     id = models.AutoField(primary_key=True, auto_created=True)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
     submenu = models.ForeignKey(SubMenu, on_delete=models.CASCADE)
-    name = models.CharField(max_length=30, unique=True)
+    name = models.CharField(max_length=30)
     description = models.TextField(null=True, max_length=255, blank=True)
     price = models.IntegerField(null=False)
 

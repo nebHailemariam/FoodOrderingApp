@@ -32,3 +32,12 @@ class SubMenuSerializer(serializers.Serializer):
     meal_type= serializers.ChoiceField(choices=MEAL_TYPE_CHOICES)
     description = serializers.CharField(max_length=255, allow_null=True)
     available = serializers.BooleanField()
+
+
+class ItemSerializer(serializers.Serializer):
+    id = serializers.IntegerField(allow_null=True)
+    restaurant_id = serializers.IntegerField()
+    submenu_id = serializers.IntegerField()
+    name = serializers.CharField(max_length=30)
+    description = serializers.CharField(max_length=255, allow_null=True)
+    price = serializers.IntegerField()

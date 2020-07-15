@@ -4,7 +4,8 @@ from rest_framework.routers import DefaultRouter
 from users.views.common.registration_views import RegisterClient, RegisterDeliveryMan, RegisterRestaurantAdmin
 from users.views.common.security_views import login
 from users.views.client.profile_views import client_profile
-from users.views.client.order_views import client_list_restaurants, client_list_restaurant, client_list_restaurant_menus
+from users.views.client.order_views import client_list_restaurants, client_list_restaurant, client_list_restaurant_menus, \
+    client_list_restaurant_menu, client_list_restaurant_submenu
 from users.views.deliveryman.profile_views import deliveryman_profile
 from users.views.restaurantadmin.profile_views import restaurantadmin_profile
 from users.views.restaurantadmin.restaurantadmin_restaurant_views import \
@@ -23,6 +24,8 @@ urlpatterns = [
     url('client/restaurants/', client_list_restaurants),
     path('client/restaurant/<int:restaurant_id>/', client_list_restaurant),
     path('client/restaurant/<int:restaurant_id>/menus/', client_list_restaurant_menus),
+    path('client/restaurant/menu/<int:menu>/', client_list_restaurant_menu),
+    path('client/restaurant/submenu/<int:submenu>/', client_list_restaurant_submenu),
 
     # Deliveryman Views
     url('deliveryman/register/', RegisterDeliveryMan.as_view()),
