@@ -13,7 +13,7 @@ $ pip3 install -r requirements.txt
 
 ## Making migrations and applying migrations to the database
 
-Open terminal and write the following command:
+Open the terminal and write the following command:
 ```
 $ python manage.py makemigrations
 $ python manage.py migrate auth
