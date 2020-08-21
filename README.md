@@ -37,9 +37,6 @@ To deploy the application type the command:
 ```
 $ python manage.py runserver
 ```
-
-## API List
-
 ## Contributing
 Pull requests are welcome.
 
